@@ -1,6 +1,6 @@
 using Microsoft.UI.Xaml;
 
-namespace WinUI3Print;
+namespace WinUI3CustomTitleBar;
 
 public partial class App : Application
 {

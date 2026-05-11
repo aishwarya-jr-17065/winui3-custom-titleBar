@@ -5,7 +5,7 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using WinRT.Interop;
 
-namespace WinUI3Print;
+namespace WinUI3CustomTitleBar;
 
 public sealed partial class MainWindow : Window
 {
