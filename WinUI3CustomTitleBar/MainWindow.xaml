@@ -4,31 +4,52 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
     mc:Ignorable="d">
     <Grid>
-        <muxc:TabView
-            x:Name="MainTabView"
-            AddTabButtonClick="MainTabView_AddTabButtonClick"
-            TabCloseRequested="MainTabView_TabCloseRequested">
-            <muxc:TabView.TabStripHeader>
-                <ToggleButton x:Name="PinToggleButton" Click="PinToggleButton_Click" ToolTipService.ToolTip="Toggle always on top">
-                    <FontIcon Glyph="&#xE840;" />
-                </ToggleButton>
-            </muxc:TabView.TabStripHeader>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-            <muxc:TabView.TabItems>
-                <muxc:TabViewItem Header="Project Brief - Review" IsClosable="True">
-                    <TextBlock Margin="12" Text="Project Brief placeholder content" />
-                </muxc:TabViewItem>
-                <muxc:TabViewItem Header="New Mail" IsClosable="True">
-                    <TextBlock Margin="12" Text="New Mail placeholder content" />
-                </muxc:TabViewItem>
-            </muxc:TabView.TabItems>
+        <!-- Custom Title Bar -->
+        <Grid x:Name="AppTitleBar" Grid.Row="0" Height="48">
+            <Grid.ColumnDefinitions>
+                <!-- Space reserved for system left chrome (e.g. restore button when snapped) -->
+                <ColumnDefinition x:Name="LeftPaddingColumn" Width="0" />
+                <!-- Title text — fills remaining space and acts as drag region -->
+                <ColumnDefinition Width="*" />
+                <!-- Expand/Collapse toggle button -->
+                <ColumnDefinition Width="Auto" />
+                <!-- Space reserved for system right buttons (minimize / maximize / close) -->
+                <ColumnDefinition x:Name="RightPaddingColumn" Width="0" />
+            </Grid.ColumnDefinitions>
 
-            <muxc:TabView.TabStripFooter>
-                <Grid x:Name="CustomDragRegion" MinWidth="188" Background="Transparent" />
-            </muxc:TabView.TabStripFooter>
-        </muxc:TabView>
+            <TextBlock
+                Grid.Column="1"
+                VerticalAlignment="Center"
+                Margin="12,0"
+                Text="My App"
+                Style="{StaticResource CaptionTextBlockStyle}" />
+
+            <Button
+                x:Name="ExpandCollapseButton"
+                Grid.Column="2"
+                Width="46"
+                Height="32"
+                Padding="0"
+                Background="Transparent"
+                BorderThickness="0"
+                ToolTipService.ToolTip="Expand / Collapse"
+                Click="ExpandCollapseButton_Click">
+                <FontIcon x:Name="BtnIcon" FontSize="12" Glyph="&#xE70E;" />
+            </Button>
+        </Grid>
+
+        <!-- Page Content -->
+        <TextBlock
+            x:Name="PageContent"
+            Grid.Row="1"
+            Margin="16"
+            Text="Page content goes here." />
     </Grid>
 </Window>

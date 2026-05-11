@@ -1,4 +1,3 @@
-using System;
 using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
@@ -10,66 +9,57 @@ namespace WinUI3CustomTitleBar;
 public sealed partial class MainWindow : Window
 {
     private readonly AppWindow _appWindow;
+    private bool _isExpanded = true;
 
     public MainWindow()
     {
-        this.InitializeComponent();
+        InitializeComponent();
 
         ExtendsContentIntoTitleBar = true;
-        _appWindow = GetAppWindowForCurrentWindow();
-        // WinUI3 Window is not a FrameworkElement and has no Loaded event.
-        // SetTitleBar and the title-bar colour setup can be applied immediately
-        // after InitializeComponent once the XAML element tree is in place.
-        SetTitleBar(CustomDragRegion);
+        SetTitleBar(AppTitleBar);
 
+        _appWindow = GetAppWindow();
         if (AppWindowTitleBar.IsCustomizationSupported())
         {
             _appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
             _appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
         }
 
-        Activated += MainWindow_Activated;
+        // Update padding columns whenever the window state changes (e.g. maximised, snapped).
+        _appWindow.Changed += AppWindow_Changed;
+
+        // Set initial padding once the title bar element has been laid out.
+        AppTitleBar.Loaded += (_, _) => UpdateTitleBarPadding();
     }
 
-    private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
+    private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
     {
-        MainTabView.Opacity = args.WindowActivationState == WindowActivationState.Deactivated ? 0.6 : 1.0;
+        if (args.DidPresenterChange)
+            UpdateTitleBarPadding();
     }
 
-    private void PinToggleButton_Click(object sender, RoutedEventArgs e)
+    private void UpdateTitleBarPadding()
     {
-        var isPinned = PinToggleButton.IsChecked == true;
-        _appWindow.SetPresenter(isPinned ? AppWindowPresenterKind.CompactOverlay : AppWindowPresenterKind.Default);
+        if (!AppWindowTitleBar.IsCustomizationSupported())
+            return;
+
+        LeftPaddingColumn.Width = new GridLength(_appWindow.TitleBar.LeftInset);
+        RightPaddingColumn.Width = new GridLength(_appWindow.TitleBar.RightInset);
     }
 
-    private void MainTabView_TabCloseRequested(TabView sender, TabViewTabCloseRequestedEventArgs args)
+    private void ExpandCollapseButton_Click(object sender, RoutedEventArgs e)
     {
-        sender.TabItems.Remove(args.Tab);
+        _isExpanded = !_isExpanded;
 
-        if (sender.TabItems.Count == 0)
-        {
-            Close();
-        }
+        // ChevronUp (U+E70E) = expanded state; ChevronDown (U+E70D) = collapsed state.
+        BtnIcon.Glyph = _isExpanded ? "\uE70E" : "\uE70D";
+        PageContent.Visibility = _isExpanded ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void MainTabView_AddTabButtonClick(TabView sender, object args)
+    private AppWindow GetAppWindow()
     {
-        sender.TabItems.Add(new TabViewItem
-        {
-            Header = $"New Tab {sender.TabItems.Count + 1}",
-            IsClosable = true,
-            Content = new TextBlock
-            {
-                Margin = new Thickness(12),
-                Text = "New tab placeholder content"
-            }
-        });
-    }
-
-    private AppWindow GetAppWindowForCurrentWindow()
-    {
-        IntPtr hWnd = WindowNative.GetWindowHandle(this);
-        WindowId windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(hWnd);
-        return AppWindow.GetFromWindowId(windowId);
+        var handle = WindowNative.GetWindowHandle(this);
+        var id = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(handle);
+        return AppWindow.GetFromWindowId(id);
     }
 }
