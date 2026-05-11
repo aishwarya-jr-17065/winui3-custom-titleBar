@@ -17,13 +17,9 @@ public sealed partial class MainWindow : Window
 
         ExtendsContentIntoTitleBar = true;
         _appWindow = GetAppWindowForCurrentWindow();
-        if (Content is FrameworkElement rootElement)
-            rootElement.Loaded += MainWindow_Loaded;
-        Activated += MainWindow_Activated;
-    }
-
-    private void MainWindow_Loaded(object sender, RoutedEventArgs e)
-    {
+        // WinUI3 Window is not a FrameworkElement and has no Loaded event.
+        // SetTitleBar and the title-bar colour setup can be applied immediately
+        // after InitializeComponent once the XAML element tree is in place.
         SetTitleBar(CustomDragRegion);
 
         if (AppWindowTitleBar.IsCustomizationSupported())
@@ -31,6 +27,8 @@ public sealed partial class MainWindow : Window
             _appWindow.TitleBar.ButtonBackgroundColor = Colors.Transparent;
             _appWindow.TitleBar.ButtonInactiveBackgroundColor = Colors.Transparent;
         }
+
+        Activated += MainWindow_Activated;
     }
 
     private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
