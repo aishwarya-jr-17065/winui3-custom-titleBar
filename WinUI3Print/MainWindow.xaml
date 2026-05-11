@@ -18,7 +18,7 @@
             </muxc:TabView.TabStripHeader>
 
             <muxc:TabView.TabItems>
-                <muxc:TabViewItem Header="Project Brief - R..." IsClosable="True">
+                <muxc:TabViewItem Header="Project Brief - Review" IsClosable="True">
                     <TextBlock Margin="12" Text="Project Brief placeholder content" />
                 </muxc:TabViewItem>
                 <muxc:TabViewItem Header="New Mail" IsClosable="True">
