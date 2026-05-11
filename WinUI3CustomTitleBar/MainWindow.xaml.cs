@@ -17,7 +17,8 @@ public sealed partial class MainWindow : Window
 
         ExtendsContentIntoTitleBar = true;
         _appWindow = GetAppWindowForCurrentWindow();
-        ((FrameworkElement)Content).Loaded += MainWindow_Loaded;
+        if (Content is FrameworkElement rootElement)
+            rootElement.Loaded += MainWindow_Loaded;
         Activated += MainWindow_Activated;
     }
 
