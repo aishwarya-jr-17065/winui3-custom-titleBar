@@ -31,7 +31,17 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Publish
-        run: msbuild WinUI3CustomTitleBar/WinUI3CustomTitleBar.csproj /restore /t:Publish /p:Configuration=Release /p:RuntimeIdentifier=${{ matrix.rid }} /p:SelfContained=true /p:PublishSingleFile=false /p:WindowsPackageType=None /p:AppxPackage=false /p:PublishDir=WinUI3CustomTitleBar/publish/${{ matrix.rid }}/
+        run: >
+          msbuild WinUI3CustomTitleBar/WinUI3CustomTitleBar.csproj
+          /restore
+          /t:Publish
+          /p:Configuration=Release
+          /p:RuntimeIdentifier=${{ matrix.rid }}
+          /p:SelfContained=true
+          /p:PublishSingleFile=false
+          /p:WindowsPackageType=None
+          /p:AppxPackage=false
+          "/p:PublishDir=${{ github.workspace }}/WinUI3CustomTitleBar/publish/${{ matrix.rid }}/"
 
       - name: Zip output
         shell: pwsh
