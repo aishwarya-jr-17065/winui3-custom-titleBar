@@ -38,8 +38,11 @@ jobs:
         run: |
           $publishDir = "WinUI3CustomTitleBar/publish/${{ matrix.rid }}"
           $zipName = "WinUI3CustomTitleBar-${{ matrix.rid }}.zip"
+          if (-not (Test-Path -Path $publishDir -PathType Container)) {
+            throw "Publish directory not found: $publishDir"
+          }
           if (Test-Path $zipName) { Remove-Item $zipName -Force }
-          Compress-Archive -Path "$publishDir/*" -DestinationPath $zipName
+          Compress-Archive -Path "$publishDir\*" -DestinationPath $zipName
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
