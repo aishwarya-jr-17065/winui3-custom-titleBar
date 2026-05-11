@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
     strategy:
       fail-fast: false
       matrix:
@@ -27,13 +27,16 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
       - name: Publish
-        run: dotnet publish WinUI3CustomTitleBar/WinUI3CustomTitleBar.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=false
+        run: msbuild WinUI3CustomTitleBar/WinUI3CustomTitleBar.csproj /restore /t:Publish /p:Configuration=Release /p:RuntimeIdentifier=${{ matrix.rid }} /p:SelfContained=true /p:PublishSingleFile=false /p:WindowsPackageType=None /p:AppxPackage=false /p:PublishDir=WinUI3CustomTitleBar\publish\${{ matrix.rid }}\
 
       - name: Zip output
         shell: pwsh
         run: |
-          $publishDir = "WinUI3CustomTitleBar/bin/Release/net8.0-windows10.0.19041.0/${{ matrix.rid }}/publish"
+          $publishDir = "WinUI3CustomTitleBar/publish/${{ matrix.rid }}"
           $zipName = "WinUI3CustomTitleBar-${{ matrix.rid }}.zip"
           if (Test-Path $zipName) { Remove-Item $zipName -Force }
           Compress-Archive -Path "$publishDir/*" -DestinationPath $zipName
@@ -46,7 +49,7 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    runs-on: windows-latest
+    runs-on: windows-2022
     needs: build
     permissions:
       contents: write
