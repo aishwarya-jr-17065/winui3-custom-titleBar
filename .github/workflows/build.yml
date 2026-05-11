@@ -22,15 +22,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install .NET Framework targeting packs
-        # MSBuild and some WinUI/UWP NuGet build tasks resolve .NET Framework
-        # reference assemblies at restore/compile time. Without the targeting
-        # packs on the runner the build fails with MSB3644 ("reference assemblies
-        # for .NETFramework,Version=v4.0 were not found").  Installing both the
-        # 4.0 and 4.8 developer packs satisfies every reference-assembly lookup.
-        shell: powershell
-        run: choco install netfx-4.0-devpack netfx-4.8-devpack -y --no-progress
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
         with:
